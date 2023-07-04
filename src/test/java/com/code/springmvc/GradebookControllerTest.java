@@ -1,11 +1,12 @@
 package com.code.springmvc;
 
-import com.code.springmvc.repository.StudentDao;
-import com.code.springmvc.service.StudentAndGradeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.code.springmvc.models.CollegeStudent;
 import com.code.springmvc.repository.HistoryGradesDao;
 import com.code.springmvc.repository.MathGradesDao;
 import com.code.springmvc.repository.ScienceGradesDao;
+import com.code.springmvc.repository.StudentDao;
+import com.code.springmvc.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +21,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @TestPropertySource("/application-test.properties")
 @AutoConfigureMockMvc
@@ -34,7 +45,7 @@ public class GradebookControllerTest {
     private static MockHttpServletRequest request;
 
     @PersistenceContext
-    private EntityManager entityMgr;
+    private EntityManager entityManager;
 
     @Mock
     StudentAndGradeService studentCreateServiceMock;
@@ -62,6 +73,9 @@ public class GradebookControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    private CollegeStudent student;
 
     @Value("${sql.script.create.student}")
     private String sqlAddStudent;
@@ -111,12 +125,75 @@ public class GradebookControllerTest {
     }
 
     @Test
-    public void placeHolder() {
+    public void getStudentsHttpRequest() throws Exception {
+
+        student.setFirstname("Chad");
+        student.setLastname("Darby");
+        student.setEmailAddress("chad.darby@code_school.com");
+        entityManager.persist(student);
+        entityManager.flush();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(2)));
 
     }
 
+    @Test
+    public void createStudentHttpRequest() throws Exception {
+        student.setFirstname("Chad");
+        student.setLastname("Darby");
+        student.setEmailAddress("chad_darby@code_school.com");
 
+        mockMvc.perform(MockMvcRequestBuilders.post("/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(student)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
 
+        CollegeStudent verifyStudent = studentDao.findByEmailAddress("chad_darby@code_school.com");
+        assertNotNull(verifyStudent, "Student should be valid.");
+    }
+
+    @Test
+    public void deleteStudentHttpRequest() throws Exception {
+        assertTrue(studentDao.findById(1).isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/student/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        assertFalse(studentDao.findById(1).isPresent());
+    }
+
+    @Test
+    public void deleteStudentHttpRequestErrorPage() throws Exception {
+        assertFalse(studentDao.findById(0).isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/student/{id}", 0))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+
+    }
+
+    @Test
+    public void studentInformationHttpRequest() throws Exception {
+
+        Optional<CollegeStudent> student = studentDao.findById(1);
+
+        assertTrue(student.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/studentInformation/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.firstname", is("Eric")))
+                .andExpect(jsonPath("$.lastname", is("Roby")))
+                .andExpect(jsonPath("$.emailAddress", is("eric.roby@code_school.com")));
+    }
 
     @AfterEach
     public void setupAfterTransaction() {
@@ -125,7 +202,6 @@ public class GradebookControllerTest {
         jdbc.execute(sqlDeleteScienceGrade);
         jdbc.execute(sqlDeleteHistoryGrade);
     }
-
 
 }
 

@@ -6,7 +6,6 @@ import com.code.springmvc.repository.MathGradesDao;
 import com.code.springmvc.repository.ScienceGradesDao;
 import com.code.springmvc.repository.StudentDao;
 import com.code.springmvc.service.StudentAndGradeService;
-import com.code.springmvc.models.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,7 +89,7 @@ public class StudentAndGradeServiceTest {
     @Test
     public void createStudentService() {
 
-        studentService.createStudent("Chad", "Darby", "chad.darby@code_school.com");
+        studentService.createStudent("Chad", "Darby", "chad.darby@code_school.com", 2000);
 
         CollegeStudent student = studentDao.findByEmailAddress("chad.darby@code_school.com");
 

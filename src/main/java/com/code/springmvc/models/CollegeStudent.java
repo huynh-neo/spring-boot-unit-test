@@ -12,6 +12,10 @@ public class CollegeStudent implements Student {
     private String firstname;
     @Column
     private String lastname;
+
+    @Column
+    private Integer yearOfBirth;
+
     @Column(name="email_address")
     private String emailAddress;
 
@@ -19,10 +23,11 @@ public class CollegeStudent implements Student {
 
     }
 
-    public CollegeStudent(String firstname, String lastname, String emailAddress) {
+    public CollegeStudent(String firstname, String lastname, String emailAddress, Integer yob) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.emailAddress = emailAddress;
+        this.yearOfBirth = yob;
     }
 
     public int getId() {
@@ -58,6 +63,14 @@ public class CollegeStudent implements Student {
     }
 
 
+    public Integer getYearOfBirth() {
+        return yearOfBirth;
+    }
+
+    public void setYearOfBirth(Integer yearOfBirth) {
+        this.yearOfBirth = yearOfBirth;
+    }
+
     public String getFullName() {
         return getFirstname() + " " + getLastname();
     }
@@ -68,6 +81,7 @@ public class CollegeStudent implements Student {
                 "id=" + id +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", age='" + String.valueOf(yearOfBirth) + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 '}';
     }

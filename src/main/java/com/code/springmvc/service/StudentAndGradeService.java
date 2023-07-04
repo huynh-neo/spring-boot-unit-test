@@ -1,7 +1,6 @@
 package com.code.springmvc.service;
 
 import com.code.springmvc.models.*;
-import com.code.springmvc.models.*;
 import com.code.springmvc.repository.HistoryGradesDao;
 import com.code.springmvc.repository.MathGradesDao;
 import com.code.springmvc.repository.ScienceGradesDao;
@@ -48,9 +47,9 @@ public class StudentAndGradeService {
 	@Autowired
 	StudentGrades studentGrades;
 
-	public void createStudent(String firstname, String lastname, String emailAddress){
+	public void createStudent(String firstname, String lastname, String emailAddress, Integer yob){
 
-		CollegeStudent student = new CollegeStudent(firstname, lastname, emailAddress);
+		CollegeStudent student = new CollegeStudent(firstname, lastname, emailAddress, yob);
 
 		student.setId(0);
 

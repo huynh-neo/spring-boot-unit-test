@@ -1,12 +1,9 @@
 package com.code.springmvc.controller;
 
-import com.code.springmvc.models.CollegeStudent;
-import com.code.springmvc.models.Gradebook;
-import com.code.springmvc.models.GradebookCollegeStudent;
-import com.code.springmvc.service.StudentAndGradeService;
 import com.code.springmvc.exceptionhandling.StudentOrGradeErrorResponse;
 import com.code.springmvc.exceptionhandling.StudentOrGradeNotFoundException;
 import com.code.springmvc.models.*;
+import com.code.springmvc.service.StudentAndGradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +43,7 @@ public class GradebookController {
     @PostMapping(value = "/")
     public List<GradebookCollegeStudent> createStudent(@RequestBody CollegeStudent student) {
 
-        studentService.createStudent(student.getFirstname(), student.getLastname(), student.getEmailAddress());
+        studentService.createStudent(student.getFirstname(), student.getLastname(), student.getEmailAddress(), 2000);
         gradebook = studentService.getGradebook();
         return gradebook.getStudents();
     }

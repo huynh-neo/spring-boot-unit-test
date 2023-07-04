@@ -157,6 +157,17 @@ public class GradebookControllerTest {
     }
 
     @Test
+    public void createStudentHttpRequestFailValidation() throws Exception {
+        student.setFirstname("d");
+        student.setLastname("Darby");
+        student.setEmailAddress("chad_darby@code_school.com");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(student)))
+                .andExpect(status().is(400));
+    }
+    @Test
     public void deleteStudentHttpRequest() throws Exception {
         assertTrue(studentDao.findById(1).isPresent());
 

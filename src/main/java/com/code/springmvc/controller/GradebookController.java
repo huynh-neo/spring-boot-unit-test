@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -41,7 +42,7 @@ public class GradebookController {
 
 
     @PostMapping(value = "/")
-    public List<GradebookCollegeStudent> createStudent(@RequestBody CollegeStudent student) {
+    public List<GradebookCollegeStudent> createStudent(@Valid @RequestBody CollegeStudent student) {
 
         studentService.createStudent(student.getFirstname(), student.getLastname(), student.getEmailAddress(), 2000);
         gradebook = studentService.getGradebook();

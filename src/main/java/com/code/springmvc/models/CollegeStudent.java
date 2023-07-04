@@ -1,6 +1,12 @@
 package com.code.springmvc.models;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "student")
@@ -9,13 +15,21 @@ public class CollegeStudent implements Student {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     @Column
+    @NotBlank(message = "firstname is required")
+    @Size(min = 2, message = "firstname is too short")
+    @Size(max = 20, message = "firstname is too long")
     private String firstname;
     @Column
+    @NotBlank(message = "lastname is required")
+    @Size(min = 2, message = "lastname is too short")
+    @Size(max = 20, message = "lastname is too long")
     private String lastname;
 
     @Column
+    @Min(1900)
     private Integer yearOfBirth;
 
+    @Email(message = "Email is not valid")
     @Column(name="email_address")
     private String emailAddress;
 
